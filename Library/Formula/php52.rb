@@ -19,6 +19,7 @@ class Php52 <Formula
     [
       ['--with-apache', "Install the Apache module (requires sudo)"],
       ['--with-mysql',  "Build with MySQL (PDO) support"],
+      ['--with-pear', "Install PEAR PHP package manager after build"]
     ]
   end
   
@@ -99,15 +100,19 @@ Pass --with-mysql to build with MySQL (PDO) support
     newmk.close
     system "cp Makefile.fix Makefile"
     
-    if ARGV.include?  '--with-apache'
+    if ARGV.include? '--with-apache'
       system "make install"
       system "mkdir #{prefix}/etc"
       system "cp ./php.ini-recommended #{prefix}/etc/php.ini"
       puts "Apache module installed at #{prefix}/libexec/apache2/libphp.so"
-      puts "Don't forget to edit httpd.conf and 'sudo apachectl restart'"
+      puts "You can symlink to it in /usr/libexec/apache2, edit httpd.conf and restart your webserver"
     else
       system "make"
       system "make install"
+    end
+    
+    if ARGV.include? '--with-pear'
+      system "curl http://pear.php.net/go-pear | #{prefix}/bin/php"
     end
   end
 end
