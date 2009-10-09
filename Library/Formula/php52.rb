@@ -17,7 +17,7 @@ class Php52 <Formula
 
   def options
     [
-      ['--with-apache', "Install the Apache module (requires sudo)"],
+      ['--with-apache', "Install the Apache module"],
       ['--with-mysql',  "Build with MySQL (PDO) support"],
       ['--with-pear', "Install PEAR PHP package manager after build"]
     ]
@@ -25,8 +25,9 @@ class Php52 <Formula
   
   def caveats
     <<-END_CAVEATS
-Pass --with-apache to build with the Apache SAPI; this mode requires sudo
-Pass --with-mysql to build with MySQL (PDO) support
+Pass --with-apache to build with the Apache SAPI
+Pass --with-mysql  to build with MySQL (PDO) support
+Pass --with-pear   to install PEAR PHP package manager after build
     END_CAVEATS
   end
 
