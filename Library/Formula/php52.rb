@@ -64,8 +64,7 @@ Pass --with-pear   to install PEAR PHP package manager after build
         "--with-mcrypt=#{HOMEBREW_PREFIX}"]
     
     if ARGV.include? '--with-apache'
-      puts "Building with the Apache SAPI; may require sudo password."
-      # system "sudo cp /usr/libexec/apache2/libphp5.so /usr/libexec/apache2/libphp5.3.apple.so"
+      puts "Building with the Apache SAPI"
       configure_args.push("--with-apxs2=/usr/sbin/apxs")
       configure_args.push("--libexecdir=#{prefix}/libexec")
     else
