@@ -12,7 +12,7 @@ class Php52 <Formula
   depends_on 'libmcrypt'
   depends_on 'libiconv'
   if ARGV.include? '--with-mysql'
-      depends_on 'mysql' => :recommended
+      depends_on 'mysql'
   end
 
   def options
