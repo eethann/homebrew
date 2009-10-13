@@ -59,7 +59,7 @@ Pass --with-pear   to install PEAR PHP package manager after build
         "--with-iconv=#{HOMEBREW_PREFIX}",
         "--with-gd",
         "--with-jpeg-dir=#{HOMEBREW_PREFIX}",
-        "--with-png-dir=#{HOMEBREW_PREFIX}",
+        "--with-png-dir=#{HOMEBREW_PREFIX}/Cellar/libpng/1.2.40",
         "--with-freetype-dir=#{HOMEBREW_PREFIX}",
         "--with-mcrypt=#{HOMEBREW_PREFIX}"]
     
