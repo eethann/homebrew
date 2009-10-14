@@ -107,6 +107,7 @@ Pass --with-pear   to install PEAR PHP package manager after build
       puts "Apache module installed at #{prefix}/libexec/apache2/libphp.so"
       puts "You can symlink to it in /usr/libexec/apache2, edit httpd.conf and restart your webserver"
     else
+      system "make"
       system "make install"
     end
     
