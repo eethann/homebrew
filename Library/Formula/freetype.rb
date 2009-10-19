@@ -1,4 +1,4 @@
-require 'brewkit'
+require 'formula'
 
 class Freetype <Formula
   @url='http://mirror.dknss.com/nongnu/freetype/freetype-2.3.9.tar.gz'

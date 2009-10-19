@@ -1,4 +1,4 @@
-require 'brewkit'
+require 'formula'
 
 class Php52 <Formula
   @url='http://www.php.net/get/php-5.2.11.tar.bz2/from/www.php.net/mirror'
