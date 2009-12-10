@@ -14,7 +14,6 @@ class Php <Formula
   # Is MySQL already installed?
   # Should the user be forced to build the latest version of MySQL if they already have a previous MySQL formula installed? 
   # Rebuilding MySQL because of a minor version bump seems a bit overkill...
-  # I seem to always forget to add --with-mysql, could the Formula ask you if you want MySQL support
   if ARGV.include? '--with-mysql'
     list = `brew list | grep mysql`
     if !list.chomp.eql? 'mysql'
@@ -76,10 +75,6 @@ class Php <Formula
       "--with-jpeg-dir=#{HOMEBREW_PREFIX}",
       "--with-png-dir=#{HOMEBREW_PREFIX}",
       "--with-gettext=#{HOMEBREW_PREFIX}"
-      #"--with-imap=#{HOMEBREW_PREFIX}",
-      #"--with-imap-ssl=/usr"
-      #"--with-config-file-scan-dir=PATH",
-      #"--with-mssql=shared,/usr/local/php5",
     ]
     
     if File.exist? "/usr/X11R6/lib"
