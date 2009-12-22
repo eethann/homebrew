@@ -12,11 +12,9 @@ class Php <Formula
   depends_on 'gettext'
   
   # Is MySQL already installed?
-  # Should the user be forced to build the latest version of MySQL if they already have a previous MySQL formula installed? 
-  # Rebuilding MySQL because of a minor version bump seems a bit overkill...
   if ARGV.include? '--with-mysql'
-    list = `brew list | grep mysql`
-    if !list.chomp.eql? 'mysql'
+    mysql_config = `which mysql_config`.chomp
+    if mysql_config.empty?
       depends_on 'mysql'
     end
   end
@@ -77,19 +75,28 @@ class Php <Formula
       "--with-gettext=#{HOMEBREW_PREFIX}"
     ]
     
-    if File.exist? "/usr/X11R6/lib"
-      configure_args.push("--with-freetype-dir=/usr/X11R6/lib")
+    if File.exist? "/usr/X11/lib"
+      configure_args.push("--with-freetype-dir=/usr/X11/lib")
     end
     
     if ARGV.include? '--with-mysql'
-       configure_args.push("--with-mysql-sock=/tmp/mysql",
-       "--with-mysqli=#{HOMEBREW_PREFIX}/bin/mysql_config",
-       "--with-mysql=#{HOMEBREW_PREFIX}/lib/mysql",
-       "--with-pdo-mysql=#{HOMEBREW_PREFIX}/bin/mysql_config")
+      mysql_config = `which mysql_config`.chomp
+      if mysql_config.empty?
+        configure_args.push("--with-mysql-sock=/tmp/mysql.sock",
+        "--with-mysqli=#{HOMEBREW_PREFIX}/bin/mysql_config",
+        "--with-mysql=#{HOMEBREW_PREFIX}",
+        "--with-pdo-mysql=#{HOMEBREW_PREFIX}")
+      else
+        mysql_path = mysql_config.gsub(/\/bin\/mysql_config/, '')
+        configure_args.push("--with-mysql-sock=/tmp/mysql.sock",
+        "--with-mysqli=#{mysql_config}",
+        "--with-mysql=#{mysql_path}",
+        "--with-pdo-mysql=#{mysql_path}")
+      end
     end
     
     # Both libpng and gettext are keg only, maybe someone can tell me if the following is necessary?
-    # OSX's does not appear to have libpng.a, so we use Homebrew's
+    # OSX does not appear to have libpng.a, so we use Homebrew's
     system "brew ln libpng"
     # OSX does not appear to supply a libintl.h, so we use Homebrew's
     system "brew ln gettext"
@@ -107,7 +114,7 @@ class Php <Formula
   end
 
  def caveats; <<-EOS
-   To enable PHP in Apache add the following to http.conf and restart Apache:
+   To enable PHP in Apache add the following to httpd.conf and restart Apache:
       LoadModule php5_module    #{prefix}/libexec/apache2/libphp5.so
 
    Edits you will most likely want to make to php.ini
