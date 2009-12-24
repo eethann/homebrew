@@ -1,5 +1,9 @@
 require 'formula'
 
+def mysql_installed?
+    `which mysql_config`.length > 0
+end
+
 class Php <Formula
   @url='http://www.php.net/get/php-5.3.1.tar.gz/from/this/mirror'
   @homepage='http://php.net/'
@@ -10,15 +14,10 @@ class Php <Formula
   depends_on 'libpng'
   depends_on 'mcrypt'
   depends_on 'gettext'
-  
-  # Is MySQL already installed?
   if ARGV.include? '--with-mysql'
-    mysql_config = `which mysql_config`.chomp
-    if mysql_config.empty?
-      depends_on 'mysql'
-    end
+    depends_on 'mysql' => :recommended unless mysql_installed?
   end
-
+  
   def options
    [
      ['--with-mysql', 'Build with MySQL support.']
@@ -28,11 +27,9 @@ class Php <Formula
   def patches
    DATA
   end
-
-  def install
-    ENV.O3 # Speed things up
-    
-    configure_args = [
+  
+  def configure_args
+    args = [
       "--prefix=#{prefix}",
       "--disable-debug",
       "--disable-dependency-tracking",
@@ -76,24 +73,28 @@ class Php <Formula
     ]
     
     if File.exist? "/usr/X11/lib"
-      configure_args.push("--with-freetype-dir=/usr/X11/lib")
+      args.push("--with-freetype-dir=/usr/X11/lib")
     end
     
     if ARGV.include? '--with-mysql'
-      mysql_config = `which mysql_config`.chomp
-      if mysql_config.empty?
-        configure_args.push("--with-mysql-sock=/tmp/mysql.sock",
+      if mysql_installed?
+        mysql_path = `which mysql_config`.chomp.gsub(/\/bin\/mysql_config/, '')
+        args.push("--with-mysql-sock=/tmp/mysql.sock",
+        "--with-mysqli=#{mysql_path}/bin/mysql_config",
+        "--with-mysql=#{mysql_path}",
+        "--with-pdo-mysql=#{mysql_path}")
+      else
+        args.push("--with-mysql-sock=/tmp/mysql.sock",
         "--with-mysqli=#{HOMEBREW_PREFIX}/bin/mysql_config",
         "--with-mysql=#{HOMEBREW_PREFIX}",
         "--with-pdo-mysql=#{HOMEBREW_PREFIX}")
-      else
-        mysql_path = mysql_config.gsub(/\/bin\/mysql_config/, '')
-        configure_args.push("--with-mysql-sock=/tmp/mysql.sock",
-        "--with-mysqli=#{mysql_config}",
-        "--with-mysql=#{mysql_path}",
-        "--with-pdo-mysql=#{mysql_path}")
       end
     end
+    return args
+  end
+  
+  def install
+    ENV.O3 # Speed things up
     
     # Both libpng and gettext are keg only, maybe someone can tell me if the following is necessary?
     # OSX does not appear to have libpng.a, so we use Homebrew's
@@ -109,7 +110,7 @@ class Php <Formula
     
     system "make"
     system "make install"
-    
+
     system "cp ./php.ini-production #{prefix}/lib/php.ini"
   end
 
