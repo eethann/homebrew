@@ -72,20 +72,20 @@ class Php <Formula
       "--with-gettext=#{HOMEBREW_PREFIX}"
     ]
     
-    if File.exist? "/usr/X11/lib"
+    # For some reason freetype.h can't be found when building on 10.5
+    if (MACOS_VERSION >= 10.6) && (File.exist? "/usr/X11/lib")
       args.push("--with-freetype-dir=/usr/X11/lib")
     end
     
     if ARGV.include? '--with-mysql'
       if mysql_installed?
-        mysql_path = `which mysql_config`.chomp.gsub(/\/bin\/mysql_config/, '')
         args.push("--with-mysql-sock=/tmp/mysql.sock",
-        "--with-mysqli=#{mysql_path}/bin/mysql_config",
-        "--with-mysql=#{mysql_path}",
-        "--with-pdo-mysql=#{mysql_path}")
+        "--with-mysqli=mysqlnd",
+        "--with-mysql=mysqlnd",
+        "--with-pdo-mysql=mysqlnd")
       else
         args.push("--with-mysql-sock=/tmp/mysql.sock",
-        "--with-mysqli=#{HOMEBREW_PREFIX}/bin/mysql_config",
+        "--with-mysqli=#{HOMEBREW_PREFIX}",
         "--with-mysql=#{HOMEBREW_PREFIX}",
         "--with-pdo-mysql=#{HOMEBREW_PREFIX}")
       end
