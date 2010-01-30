@@ -1,10 +1,10 @@
 require 'formula'
 
 class Php52 <Formula
-  @url='http://www.php.net/get/php-5.2.11.tar.bz2/from/www.php.net/mirror'
-  @version='5.2.11'
+  @url='http://www.php.net/get/php-5.2.12.tar.bz2/from/www.php.net/mirror'
+  @version='5.2.12'
   @homepage='http://php.net/'
-  @md5='286bf34630f5643c25ebcedfec5e0a09'
+  @md5='5b7077e366c7eeab34da31dd860a1923'
 
   depends_on 'jpeg'
   depends_on 'freetype'
@@ -18,8 +18,8 @@ class Php52 <Formula
   def options
     [
       ['--with-apache', "Install the Apache module"],
-      ['--with-mysql',  "Build with MySQL (PDO) support"],
-      ['--with-pear', "Install PEAR PHP package manager after build"]
+      ['--with-mysql',  "Build with MySQL (PDO) support"]
+      # ['--with-pear', "Install PEAR PHP package manager after build"]
     ]
   end
   
@@ -27,7 +27,6 @@ class Php52 <Formula
     <<-END_CAVEATS
 Pass --with-apache to build with the Apache SAPI
 Pass --with-mysql  to build with MySQL (PDO) support
-Pass --with-pear   to install PEAR PHP package manager after build
     END_CAVEATS
   end
 
@@ -111,8 +110,8 @@ Pass --with-pear   to install PEAR PHP package manager after build
       system "make install"
     end
     
-    if ARGV.include? '--with-pear'
-      system "curl http://pear.php.net/go-pear | #{prefix}/bin/php"
-    end
+    # if ARGV.include? '--with-pear'
+    #   system "curl http://pear.php.net/go-pear | #{prefix}/bin/php"
+    # end
   end
 end
