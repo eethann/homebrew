@@ -5,10 +5,10 @@ def mysql_installed?
 end
 
 class Php <Formula
-  @url='http://www.php.net/get/php-5.3.1.tar.gz/from/this/mirror'
+  @url='http://www.php.net/get/php-5.3.2.tar.gz/from/this/mirror'
   @homepage='http://php.net/'
-  @md5='41fbb368d86acb13fc3519657d277681'
-  @version='5.3.1'
+  @md5='4480d7c6d6b4a86de7b8ec8f0c2d1871'
+  @version='5.3.2'
 
   depends_on 'jpeg'
   depends_on 'libpng'
@@ -115,15 +115,21 @@ class Php <Formula
   end
 
  def caveats; <<-EOS
+   For 10.5 and Apache:
+    Apache needs to run in 32-bit mode. You can either force Apache to start 
+    in 32-bit mode or you can thin the Apache executable. The following page 
+    has instructions for both methods:
+    http://code.google.com/p/modwsgi/wiki/InstallationOnMacOSX
+   
    To enable PHP in Apache add the following to httpd.conf and restart Apache:
-      LoadModule php5_module    #{prefix}/libexec/apache2/libphp5.so
+    LoadModule php5_module    #{prefix}/libexec/apache2/libphp5.so
 
    Edits you will most likely want to make to php.ini
     Date:
       You will want to set date.timezone setting to your timezone.
       http://www.php.net/manual/en/timezones.php
 
-    For MySQL (assuming default MySQL config):
+    MySQL:
       pdo_mysql.default_socket = /tmp/mysql.sock
       mysql.default_port = 3306
       mysql.default_socket = /tmp/mysql.sock
