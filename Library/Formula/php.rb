@@ -64,30 +64,29 @@ class Php <Formula
       "--with-curl=/usr",
       "--with-apxs2=/usr/sbin/apxs",
       "--libexecdir=#{prefix}/libexec",
-      "--with-mcrypt=#{HOMEBREW_PREFIX}",
       "--with-gd",
       "--enable-gd-native-ttf",
-      "--with-jpeg-dir=#{HOMEBREW_PREFIX}",
-      "--with-png-dir=#{HOMEBREW_PREFIX}",
-      "--with-gettext=#{HOMEBREW_PREFIX}"
+      "--with-mcrypt=#{Formula.factory('mcrypt').prefix}",
+      "--with-jpeg-dir=#{Formula.factory('jpeg').prefix}",
+      "--with-png-dir=#{Formula.factory('libpng').prefix}",
+      "--with-gettext=#{Formula.factory('gettext').prefix}"
     ]
     
     # For some reason freetype.h can't be found when building on 10.5
     if (MACOS_VERSION >= 10.6) && (File.exist? "/usr/X11/lib")
-      args.push("--with-freetype-dir=/usr/X11/lib")
+      args.push "--with-freetype-dir=/usr/X11/lib"
     end
     
     if ARGV.include? '--with-mysql'
       if mysql_installed?
-        args.push("--with-mysql-sock=/tmp/mysql.sock",
-        "--with-mysqli=mysqlnd",
-        "--with-mysql=mysqlnd",
-        "--with-pdo-mysql=mysqlnd")
+        args.push "--with-mysql-sock=/tmp/mysql.sock"
+        args.push "--with-mysqli=mysqlnd"
+        args.push "--with-mysql=mysqlnd"
+        args.push "--with-pdo-mysql=mysqlnd"
       else
-        args.push("--with-mysql-sock=/tmp/mysql.sock",
-        "--with-mysqli=#{HOMEBREW_PREFIX}",
-        "--with-mysql=#{HOMEBREW_PREFIX}",
-        "--with-pdo-mysql=#{HOMEBREW_PREFIX}")
+        args.push "--with-mysqli=#{Formula.factory('mysql').bin}/mysql_config}"
+        args.push "--with-mysql=#{Formula.factory('mysql').prefix}"
+        args.push "--with-pdo-mysql=#{Formula.factory('mysql').prefix}"
       end
     end
     return args
@@ -95,13 +94,6 @@ class Php <Formula
   
   def install
     ENV.O3 # Speed things up
-    
-    # Both libpng and gettext are keg only, maybe someone can tell me if the following is necessary?
-    # OSX does not appear to have libpng.a, so we use Homebrew's
-    system "brew ln libpng"
-    # OSX does not appear to supply a libintl.h, so we use Homebrew's
-    system "brew ln gettext"
-    
     system "./configure", *configure_args
 
     inreplace "Makefile",
