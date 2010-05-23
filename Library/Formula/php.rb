@@ -69,7 +69,8 @@ class Php <Formula
       "--with-mcrypt=#{Formula.factory('mcrypt').prefix}",
       "--with-jpeg-dir=#{Formula.factory('jpeg').prefix}",
       "--with-png-dir=#{Formula.factory('libpng').prefix}",
-      "--with-gettext=#{Formula.factory('gettext').prefix}"
+      "--with-gettext=#{Formula.factory('gettext').prefix}",
+      "--with-tidy"
     ]
     
     # For some reason freetype.h can't be found when building on 10.5
@@ -157,3 +158,23 @@ diff -Naur php-5.3.0/ext/iconv/iconv.c php/ext/iconv/iconv.c
  
  /* {{{ typedef enum php_iconv_enc_scheme_t */
  typedef enum _php_iconv_enc_scheme_t {
+diff -Naur php-5.3.2/ext/tidy/tidy.c php/ext/tidy/tidy.c 
+--- php-5.3.2/ext/tidy/tidy.c	2010-02-12 04:36:40.000000000 +1100
++++ php/ext/tidy/tidy.c	2010-05-23 19:49:47.000000000 +1000
+@@ -22,6 +22,8 @@
+ #include "config.h"
+ #endif
+ 
++#include "tidy.h"
++
+ #include "php.h"
+ #include "php_tidy.h"
+ 
+@@ -31,7 +33,6 @@
+ #include "ext/standard/info.h"
+ #include "safe_mode.h"
+ 
+-#include "tidy.h"
+ #include "buffio.h"
+ 
+ /* compatibility with older versions of libtidy */
