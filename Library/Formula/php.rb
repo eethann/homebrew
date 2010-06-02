@@ -10,6 +10,9 @@ class Php <Formula
   @md5='4480d7c6d6b4a86de7b8ec8f0c2d1871'
   @version='5.3.2'
 
+  # So PHP extensions don't report missing symbols
+  skip_clean 'bin'
+
   depends_on 'jpeg'
   depends_on 'libpng'
   depends_on 'mcrypt'
