@@ -5,10 +5,10 @@ def mysql_installed?
 end
 
 class Php <Formula
-  @url='http://www.php.net/get/php-5.3.2.tar.gz/from/this/mirror'
-  @homepage='http://php.net/'
-  @md5='4480d7c6d6b4a86de7b8ec8f0c2d1871'
-  @version='5.3.2'
+  url 'http://www.php.net/get/php-5.3.2.tar.gz/from/this/mirror'
+  homepage 'http://php.net/'
+  md5 '4480d7c6d6b4a86de7b8ec8f0c2d1871'
+  version '5.3.2'
 
   # So PHP extensions don't report missing symbols
   skip_clean 'bin'
@@ -100,6 +100,7 @@ class Php <Formula
     ENV.O3 # Speed things up
     system "./configure", *configure_args
 
+    # Use Homebrew prefix for the Apache libexec folder
     inreplace "Makefile",
       "INSTALL_IT = $(mkinstalldirs) '$(INSTALL_ROOT)/usr/libexec/apache2' && $(mkinstalldirs) '$(INSTALL_ROOT)/private/etc/apache2' && /usr/sbin/apxs -S LIBEXECDIR='$(INSTALL_ROOT)/usr/libexec/apache2' -S SYSCONFDIR='$(INSTALL_ROOT)/private/etc/apache2' -i -a -n php5 libs/libphp5.so",
       "INSTALL_IT = $(mkinstalldirs) '#{prefix}/libexec/apache2' && $(mkinstalldirs) '$(INSTALL_ROOT)/private/etc/apache2' && /usr/sbin/apxs -S LIBEXECDIR='#{prefix}/libexec/apache2' -S SYSCONFDIR='$(INSTALL_ROOT)/private/etc/apache2' -i -a -n php5 libs/libphp5.so"
