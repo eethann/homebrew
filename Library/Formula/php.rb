@@ -73,7 +73,8 @@ class Php <Formula
       "--with-jpeg-dir=#{Formula.factory('jpeg').prefix}",
       "--with-png-dir=#{Formula.factory('libpng').prefix}",
       "--with-gettext=#{Formula.factory('gettext').prefix}",
-      "--with-tidy"
+      "--with-tidy",
+      "--mandir=#{man}"
     ]
     
     if ARGV.include? '--with-mysql'
