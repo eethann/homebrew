@@ -76,11 +76,6 @@ class Php <Formula
       "--with-tidy"
     ]
     
-    # For some reason freetype.h can't be found when building on 10.5
-    if (MACOS_VERSION >= 10.6) && (File.exist? "/usr/X11/lib")
-      args.push "--with-freetype-dir=/usr/X11/lib"
-    end
-    
     if ARGV.include? '--with-mysql'
       if mysql_installed?
         args.push "--with-mysql-sock=/tmp/mysql.sock"
