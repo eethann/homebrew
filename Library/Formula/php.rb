@@ -5,10 +5,10 @@ def mysql_installed?
 end
 
 class Php <Formula
-  url 'http://www.php.net/get/php-5.3.2.tar.gz/from/this/mirror'
+  url 'http://www.php.net/get/php-5.3.3.tar.gz/from/this/mirror'
   homepage 'http://php.net/'
-  md5 '4480d7c6d6b4a86de7b8ec8f0c2d1871'
-  version '5.3.2'
+  md5 '5adf1a537895c2ec933fddd48e78d8a2'
+  version '5.3.3'
 
   # So PHP extensions don't report missing symbols
   skip_clean 'bin'
@@ -135,29 +135,6 @@ class Php <Formula
 end
 
 __END__
-diff -Naur php-5.3.0/ext/iconv/iconv.c php/ext/iconv/iconv.c
---- php-5.3.0/ext/iconv/iconv.c	2009-03-16 22:31:04.000000000 -0700
-+++ php/ext/iconv/iconv.c	2009-07-15 14:40:09.000000000 -0700
-@@ -51,9 +51,6 @@
- #include <gnu/libc-version.h>
- #endif
- 
--#ifdef HAVE_LIBICONV
--#undef iconv
--#endif
- 
- #include "ext/standard/php_smart_str.h"
- #include "ext/standard/base64.h"
-@@ -182,9 +179,6 @@
- }
- /* }}} */
- 
--#ifdef HAVE_LIBICONV
--#define iconv libiconv
--#endif
- 
- /* {{{ typedef enum php_iconv_enc_scheme_t */
- typedef enum _php_iconv_enc_scheme_t {
 diff -Naur php-5.3.2/ext/tidy/tidy.c php/ext/tidy/tidy.c 
 --- php-5.3.2/ext/tidy/tidy.c	2010-02-12 04:36:40.000000000 +1100
 +++ php/ext/tidy/tidy.c	2010-05-23 19:49:47.000000000 +1000
