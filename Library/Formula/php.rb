@@ -36,6 +36,7 @@ class Php <Formula
       "--prefix=#{prefix}",
       "--disable-debug",
       "--disable-dependency-tracking",
+      "--with-config-file-path=#{prefix}/etc",
       "--with-iconv-dir=/usr",
       "--enable-exif",
       "--enable-soap",
@@ -104,7 +105,7 @@ class Php <Formula
     system "make"
     system "make install"
 
-    system "cp ./php.ini-production #{prefix}/lib/php.ini"
+    system "cp ./php.ini-production #{prefix}/etc/php.ini"
   end
 
  def caveats; <<-EOS
@@ -128,8 +129,8 @@ class Php <Formula
       mysql.default_socket = /tmp/mysql.sock
       mysqli.default_socket = /tmp/mysql.sock
 
-      The php.ini file can be found in: 
-      #{prefix}/lib/php.ini
+    The php.ini file can be found in:
+      #{prefix}/etc/php.ini
    EOS
  end
 end
