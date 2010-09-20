@@ -13,6 +13,7 @@ class Php <Formula
   # So PHP extensions don't report missing symbols
   skip_clean 'bin'
 
+  depends_on 'libxml2'
   depends_on 'jpeg'
   depends_on 'libpng'
   depends_on 'mcrypt'
@@ -68,7 +69,7 @@ class Php <Formula
       "--with-xmlrpc",
       "--with-iodbc",
       "--with-kerberos=/usr",
-      "--with-libxml-dir=/usr",
+      "--with-libxml-dir=#{Formula.factory('libxml2').prefix}",
       "--with-xsl=/usr",
       "--with-curl=/usr",
       "--with-gd",
