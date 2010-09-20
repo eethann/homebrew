@@ -20,10 +20,15 @@ class Php <Formula
   if ARGV.include? '--with-mysql'
     depends_on 'mysql' => :recommended unless mysql_installed?
   end
+  if ARGV.include? '--with-fpm'
+    depends_on 'libevent'
+  end
   
   def options
    [
-     ['--with-mysql', 'Build with MySQL support.']
+     ['--with-mysql', 'Build with MySQL support'],
+     ['--with-fpm', 'Enable building of the fpm SAPI executable'],
+     ['--with-apache', 'Build shared Apache 2.0 Handler module']
    ]
   end
 
@@ -66,8 +71,6 @@ class Php <Formula
       "--with-libxml-dir=/usr",
       "--with-xsl=/usr",
       "--with-curl=/usr",
-      "--with-apxs2=/usr/sbin/apxs",
-      "--libexecdir=#{prefix}/libexec",
       "--with-gd",
       "--enable-gd-native-ttf",
       "--with-mcrypt=#{Formula.factory('mcrypt').prefix}",
@@ -77,7 +80,27 @@ class Php <Formula
       "--with-tidy",
       "--mandir=#{man}"
     ]
-    
+
+    # Bail if both php-fpm and apxs are enabled
+    # http://bugs.php.net/bug.php?id=52419
+    if (ARGV.include? '--with-fpm') && (ARGV.include? '--with-apache')
+      onoe "You can only enable PHP FPM or Apache, not both"
+      puts "For more information:"
+      puts "http://bugs.php.net/bug.php?id=52419"
+      exit 99
+    end
+
+    # Enable PHP FPM
+    if ARGV.include? '--with-fpm'
+      args.push "--enable-fpm"
+    end
+
+    # Build Apache module
+    if ARGV.include? '--with-apache'
+      args.push "--with-apxs2=/usr/sbin/apxs"
+      args.push "--libexecdir=#{prefix}/libexec"
+    end
+
     if ARGV.include? '--with-mysql'
       if mysql_installed?
         args.push "--with-mysql-sock=/tmp/mysql.sock"
@@ -97,10 +120,12 @@ class Php <Formula
     ENV.O3 # Speed things up
     system "./configure", *configure_args
 
-    # Use Homebrew prefix for the Apache libexec folder
-    inreplace "Makefile",
-      "INSTALL_IT = $(mkinstalldirs) '$(INSTALL_ROOT)/usr/libexec/apache2' && $(mkinstalldirs) '$(INSTALL_ROOT)/private/etc/apache2' && /usr/sbin/apxs -S LIBEXECDIR='$(INSTALL_ROOT)/usr/libexec/apache2' -S SYSCONFDIR='$(INSTALL_ROOT)/private/etc/apache2' -i -a -n php5 libs/libphp5.so",
-      "INSTALL_IT = $(mkinstalldirs) '#{prefix}/libexec/apache2' && $(mkinstalldirs) '$(INSTALL_ROOT)/private/etc/apache2' && /usr/sbin/apxs -S LIBEXECDIR='#{prefix}/libexec/apache2' -S SYSCONFDIR='$(INSTALL_ROOT)/private/etc/apache2' -i -a -n php5 libs/libphp5.so"
+    if ARGV.include? '--with-apache'
+      # Use Homebrew prefix for the Apache libexec folder
+      inreplace "Makefile",
+        "INSTALL_IT = $(mkinstalldirs) '$(INSTALL_ROOT)/usr/libexec/apache2' && $(mkinstalldirs) '$(INSTALL_ROOT)/private/etc/apache2' && /usr/sbin/apxs -S LIBEXECDIR='$(INSTALL_ROOT)/usr/libexec/apache2' -S SYSCONFDIR='$(INSTALL_ROOT)/private/etc/apache2' -i -a -n php5 libs/libphp5.so",
+        "INSTALL_IT = $(mkinstalldirs) '#{prefix}/libexec/apache2' && $(mkinstalldirs) '$(INSTALL_ROOT)/private/etc/apache2' && /usr/sbin/apxs -S LIBEXECDIR='#{prefix}/libexec/apache2' -S SYSCONFDIR='$(INSTALL_ROOT)/private/etc/apache2' -i -a -n php5 libs/libphp5.so"
+    end
     
     system "make"
     system "make install"
@@ -111,23 +136,10 @@ class Php <Formula
  def caveats; <<-EOS
    For 10.5 and Apache:
     Apache needs to run in 32-bit mode. You can either force Apache to start 
-    in 32-bit mode or you can thin the Apache executable. The following page 
-    has instructions for both methods:
-    http://code.google.com/p/modwsgi/wiki/InstallationOnMacOSX
+    in 32-bit mode or you can thin the Apache executable.
    
    To enable PHP in Apache add the following to httpd.conf and restart Apache:
     LoadModule php5_module    #{prefix}/libexec/apache2/libphp5.so
-
-   Edits you will most likely want to make to php.ini
-    Date:
-      You will want to set date.timezone setting to your timezone.
-      http://www.php.net/manual/en/timezones.php
-
-    MySQL:
-      pdo_mysql.default_socket = /tmp/mysql.sock
-      mysql.default_port = 3306
-      mysql.default_socket = /tmp/mysql.sock
-      mysqli.default_socket = /tmp/mysql.sock
 
     The php.ini file can be found in:
       #{prefix}/etc/php.ini
