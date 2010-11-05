@@ -11,7 +11,8 @@ class Php <Formula
   version '5.3.3'
 
   # So PHP extensions don't report missing symbols
-  skip_clean 'bin'
+  skip_clean ['bin', 'sbin']
+
 
   depends_on 'libxml2'
   depends_on 'jpeg'
