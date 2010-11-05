@@ -87,7 +87,7 @@ Pass --fpm to build with FastCGI Process Manager support
     end
     
     if ARGV.include? '--fpm'
-      configure_args.push("--enable-fastcgi", "--enable-fpm", "--with-pear")
+      configure_args.push("--enable-fastcgi", "--enable-fpm")
       # system "./buildconf --force"
     end
 
