@@ -14,13 +14,16 @@ class Php52 <Formula
   if ARGV.include? '--with-mysql'
       depends_on 'mysql'
   end
-
+  if ARGV.include? '--fpm'
+    exit if ARGV.include? '--with-apache'
+    depends_on 'libevent'
+  end
+  
   def options
     [
       ['--with-apache', "Install the Apache module"],
       ['--with-mysql',  "Build with MySQL (PDO) support"],
       ['--fpm', "Build with 'FastCGI Process Manager' patch"]
-      # ['--with-pear', "Install PEAR PHP package manager after build"]
     ]
   end
   
@@ -37,9 +40,10 @@ Pass --fpm to build with FastCGI Process Manager support
     END_CAVEATS
   end
 
-  def skip_clean? path
-    path == bin+'php'
-  end
+  # def skip_clean? path
+  #   path == bin+'php'
+  # end
+  skip_clean ['bin', 'sbin']
 
   def install
     configure_args = [
@@ -62,10 +66,10 @@ Pass --fpm to build with FastCGI Process Manager support
         "--with-xsl=/usr",
         "--without-pear",
         "--with-libxml-dir=/usr",
-        "--with-iconv=#{HOMEBREW_PREFIX}/Cellar/libiconv/#{versions_of("libiconv").first}",
+        "--with-iconv=#{Formula.factory('libiconv').prefix}",
         "--with-gd",
         "--with-jpeg-dir=#{HOMEBREW_PREFIX}",
-        "--with-png-dir=#{HOMEBREW_PREFIX}/Cellar/libpng/#{versions_of("libpng").first}",
+        "--with-png-dir=#{Formula.factory('libpng').prefix}",
         "--with-freetype-dir=#{HOMEBREW_PREFIX}",
         "--with-mcrypt=#{HOMEBREW_PREFIX}"]
     
@@ -87,33 +91,37 @@ Pass --fpm to build with FastCGI Process Manager support
     end
     
     if ARGV.include? '--fpm'
-      configure_args.push("--enable-fastcgi", "--enable-fpm")
-      # system "./buildconf --force"
+      system "./buildconf --force"
+      configure_args.push(
+        "--enable-fastcgi",
+        "--enable-fpm",
+        "--with-libevent=#{Formula.factory('libevent').prefix}"
+      )
     end
 
     system "./configure", *configure_args
     
-    mkfile = File.open("Makefile")
-    newmk  = File.new("Makefile.fix", "w")
-    mkfile.each do |line|
-        if /^EXTRA_LIBS =(.*)$/ =~ line
-            newmk.print "EXTRA_LIBS =", $1, " -lresolv\n"
-        elsif /^MH_BUNDLE_FLAGS =(.*)$/ =~ line
-            newmk.print "MH_BUNDLE_FLAGS =", $1, " -lresolv\n"
-        elsif /\$\(CC\) \$\(MH_BUNDLE_FLAGS\)/ =~ line
-            newmk.print "\t", '$(CC) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) $(PHP_GLOBAL_OBJS:.lo=.o) $(PHP_SAPI_OBJS:.lo=.o) $(PHP_FRAMEWORKS) $(EXTRA_LIBS) $(ZEND_EXTRA_LIBS) $(MH_BUNDLE_FLAGS) -o $@ && cp $@ libs/libphp$(PHP_MAJOR_VERSION).so', "\n"
-        elsif /^INSTALL_IT =(.*)$/ =~ line
-          if ARGV.include? '--with-apache'
-            newmk.print "INSTALL_IT = $(mkinstalldirs) '#{prefix}/libexec/apache2' && $(mkinstalldirs) '$(INSTALL_ROOT)/private/etc/apache2' && /usr/sbin/apxs -S LIBEXECDIR='#{prefix}/libexec/apache2' -S SYSCONFDIR='$(INSTALL_ROOT)/private/etc/apache2' -i -a -n php5 libs/libphp5.so", "\n"
-          else
-            newmk.print line
-          end
-        else
-            newmk.print line
-        end
-    end
-    newmk.close
-    system "cp Makefile.fix Makefile"
+    # mkfile = File.open("Makefile")
+    # newmk  = File.new("Makefile.fix", "w")
+    # mkfile.each do |line|
+    #     if /^EXTRA_LIBS =(.*)$/ =~ line
+    #         newmk.print "EXTRA_LIBS =", $1, " -lresolv\n"
+    #     elsif /^MH_BUNDLE_FLAGS =(.*)$/ =~ line
+    #         newmk.print "MH_BUNDLE_FLAGS =", $1, " -lresolv\n"
+    #     elsif /\$\(CC\) \$\(MH_BUNDLE_FLAGS\)/ =~ line
+    #         newmk.print "\t", '$(CC) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) $(PHP_GLOBAL_OBJS:.lo=.o) $(PHP_SAPI_OBJS:.lo=.o) $(PHP_FRAMEWORKS) $(EXTRA_LIBS) $(ZEND_EXTRA_LIBS) $(MH_BUNDLE_FLAGS) -o $@ && cp $@ libs/libphp$(PHP_MAJOR_VERSION).so', "\n"
+    #     elsif /^INSTALL_IT =(.*)$/ =~ line
+    #       if ARGV.include? '--with-apache'
+    #         newmk.print "INSTALL_IT = $(mkinstalldirs) '#{prefix}/libexec/apache2' && $(mkinstalldirs) '$(INSTALL_ROOT)/private/etc/apache2' && /usr/sbin/apxs -S LIBEXECDIR='#{prefix}/libexec/apache2' -S SYSCONFDIR='$(INSTALL_ROOT)/private/etc/apache2' -i -a -n php5 libs/libphp5.so", "\n"
+    #       else
+    #         newmk.print line
+    #       end
+    #     else
+    #         newmk.print line
+    #     end
+    # end
+    # newmk.close
+    # system "cp Makefile.fix Makefile"
     
     if ARGV.include? '--with-apache'
       system "make install"
