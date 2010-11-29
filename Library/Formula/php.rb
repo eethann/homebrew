@@ -25,10 +25,14 @@ class Php <Formula
   if ARGV.include? '--with-fpm'
     depends_on 'libevent'
   end
+  if ARGV.include? '--with-pgsql'
+    depends_on 'postgresql'
+  end
   
   def options
    [
      ['--with-mysql', 'Build with MySQL support'],
+     ['--with-pgsql', 'Build with PostgreSQL support'],
      ['--with-fpm', 'Enable building of the fpm SAPI executable'],
      ['--with-apache', 'Build shared Apache 2.0 Handler module']
    ]
@@ -115,6 +119,11 @@ class Php <Formula
         args.push "--with-pdo-mysql=#{Formula.factory('mysql').prefix}"
       end
     end
+
+    if ARGV.include? '--with-pgsql'
+      args.push "--with-pgsql=#{Formula.factory('postgresql').prefix}"
+    end
+
     return args
   end
   
