@@ -107,17 +107,12 @@ class Php <Formula
       args.push "--libexecdir=#{prefix}/libexec"
     end
 
+    # http://php.net/manual/en/mysqlnd.overview.php
     if ARGV.include? '--with-mysql'
-      if mysql_installed?
-        args.push "--with-mysql-sock=/tmp/mysql.sock"
-        args.push "--with-mysqli=mysqlnd"
-        args.push "--with-mysql=mysqlnd"
-        args.push "--with-pdo-mysql=mysqlnd"
-      else
-        args.push "--with-mysqli=#{Formula.factory('mysql').bin}/mysql_config}"
-        args.push "--with-mysql=#{Formula.factory('mysql').prefix}"
-        args.push "--with-pdo-mysql=#{Formula.factory('mysql').prefix}"
-      end
+      args.push "--with-mysql-sock=/tmp/mysql.sock"
+      args.push "--with-mysqli=mysqlnd"
+      args.push "--with-mysql=mysqlnd"
+      args.push "--with-pdo-mysql=mysqlnd"
     end
 
     if ARGV.include? '--with-pgsql'
