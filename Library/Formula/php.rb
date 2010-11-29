@@ -1,7 +1,7 @@
 require 'formula'
 
 def mysql_installed?
-    `which mysql_config`.length > 0
+  `which mysql_config`.length > 0
 end
 
 class Php <Formula
@@ -91,7 +91,6 @@ class Php <Formula
     # http://bugs.php.net/bug.php?id=52419
     if (ARGV.include? '--with-fpm') && (ARGV.include? '--with-apache')
       onoe "You can only enable PHP FPM or Apache, not both"
-      puts "For more information:"
       puts "http://bugs.php.net/bug.php?id=52419"
       exit 99
     end
