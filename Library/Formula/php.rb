@@ -116,6 +116,7 @@ class Php <Formula
 
     if ARGV.include? '--with-pgsql'
       args.push "--with-pgsql=#{Formula.factory('postgresql').prefix}"
+      args.push "--with-pdo-pgsql=#{Formula.factory('postgresql').prefix}"
     end
 
     return args
