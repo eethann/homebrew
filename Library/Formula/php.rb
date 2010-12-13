@@ -28,11 +28,15 @@ class Php <Formula
   if ARGV.include? '--with-pgsql'
     depends_on 'postgresql'
   end
+  if ARGV.include? '--with-mssql'
+    depends_on 'freetds'
+  end
   
   def options
    [
-     ['--with-mysql', 'Build with MySQL support'],
-     ['--with-pgsql', 'Build with PostgreSQL support'],
+     ['--with-mysql', 'Include MySQL support'],
+     ['--with-pgsql', 'Include PostgreSQL support'],
+     ['--with-mssql', 'Include MSSQL-DB support'],
      ['--with-fpm', 'Enable building of the fpm SAPI executable'],
      ['--with-apache', 'Build shared Apache 2.0 Handler module']
    ]
@@ -106,7 +110,6 @@ class Php <Formula
       args.push "--libexecdir=#{prefix}/libexec"
     end
 
-    # http://php.net/manual/en/mysqlnd.overview.php
     if ARGV.include? '--with-mysql'
       args.push "--with-mysql-sock=/tmp/mysql.sock"
       args.push "--with-mysqli=mysqlnd"
@@ -117,6 +120,10 @@ class Php <Formula
     if ARGV.include? '--with-pgsql'
       args.push "--with-pgsql=#{Formula.factory('postgresql').prefix}"
       args.push "--with-pdo-pgsql=#{Formula.factory('postgresql').prefix}"
+    end
+
+    if ARGV.include? '--with-mssql'
+      args.push "--with-mssql=#{Formula.factory('freetds').prefix}"
     end
 
     return args
