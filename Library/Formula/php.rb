@@ -144,6 +144,13 @@ class Php <Formula
     system "make install"
 
     system "cp ./php.ini-production #{prefix}/etc/php.ini"
+
+    if ARGV.include? '--with-fpm'
+      (prefix+'org.php.php-fpm.plist').write startup_plist
+      system "cp #{prefix}/etc/php-fpm.conf.default #{prefix}/etc/php-fpm.conf"
+      (prefix+'var/log').mkpath
+      touch prefix+'var/log/php-fpm.log'
+    end
   end
 
  def caveats; <<-EOS
@@ -157,6 +164,23 @@ class Php <Formula
     The php.ini file can be found in:
       #{prefix}/etc/php.ini
    EOS
+ end
+
+
+ def startup_plist; <<-EOPLIST.undent
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+   <plist version="1.0">
+   <dict>
+     <key>Label</key>
+     <string>org.php.php-fpm</string>
+     <key>Program</key>
+     <string>#{sbin}/php-fpm</string>
+     <key>RunAtLoad</key>
+     <true/>
+   </dict>
+   </plist>
+   EOPLIST
  end
 end
 
