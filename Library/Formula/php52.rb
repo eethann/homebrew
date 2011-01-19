@@ -1,10 +1,10 @@
 require 'formula'
 
 class Php52 <Formula
-  @url='http://www.php.net/get/php-5.2.14.tar.bz2/from/www.php.net/mirror'
-  @version='5.2.14'
+  @url='http://www.php.net/get/php-5.2.17.tar.bz2/from/www.php.net/mirror'
+  @version='5.2.17'
   @homepage='http://php.net/'
-  @md5='bfdfc0e62fe437020cc04078269d1414'
+  @md5='b27947f3045220faf16e4d9158cbfe13'
 
   depends_on 'jpeg'
   depends_on 'freetype'
@@ -71,7 +71,8 @@ Pass --fpm to build with FastCGI Process Manager support
         "--with-jpeg-dir=#{HOMEBREW_PREFIX}",
         "--with-png-dir=#{Formula.factory('libpng').prefix}",
         "--with-freetype-dir=#{HOMEBREW_PREFIX}",
-        "--with-mcrypt=#{HOMEBREW_PREFIX}"]
+        "--with-mcrypt=#{HOMEBREW_PREFIX}",
+        "--mandir=#{man}"]
     
     if ARGV.include? '--with-apache'
       puts "Building with the Apache SAPI"
