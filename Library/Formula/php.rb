@@ -92,9 +92,8 @@ class Php <Formula
     ]
 
     # Free type support
-    # For some reason freetype.h can't be found when building on 10.5
-    if (MACOS_VERSION >= 10.6) && (File.exist? "/usr/X11/lib")
-      args.push "--with-freetype-dir=/usr/X11/lib"
+    if File.exist? "/usr/X11"
+      args.push "--with-freetype-dir=/usr/X11"
     end
 
     # Bail if both php-fpm and apxs are enabled
