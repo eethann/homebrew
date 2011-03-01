@@ -31,6 +31,9 @@ class Php <Formula
   if ARGV.include? '--with-mssql'
     depends_on 'freetds'
   end
+  if ARGV.include? '--with-intl'
+    depends_on 'icu4c'
+  end
   
   def options
    [
@@ -38,7 +41,8 @@ class Php <Formula
      ['--with-pgsql', 'Include PostgreSQL support'],
      ['--with-mssql', 'Include MSSQL-DB support'],
      ['--with-fpm', 'Enable building of the fpm SAPI executable'],
-     ['--with-apache', 'Build shared Apache 2.0 Handler module']
+     ['--with-apache', 'Build shared Apache 2.0 Handler module'],
+     ['--with-intl', 'Include intl extension']
    ]
   end
 
@@ -134,10 +138,18 @@ class Php <Formula
       args.push "--with-mssql=#{Formula.factory('freetds').prefix}"
     end
 
+    if ARGV.include? '--with-intl'
+      args.push "--enable-intl"
+      args.push "--with-icu-dir=#{Formula.factory('icu4c').prefix}"
+    end
+
     return args
   end
   
   def install
+    # Because for icu4c, we must link with c++ when building with intl extension
+    ENV.append 'LDFLAGS', '-lstdc++' if ARGV.include? '--with-intl'
+
     ENV.O3 # Speed things up
     system "./configure", *configure_args
 
