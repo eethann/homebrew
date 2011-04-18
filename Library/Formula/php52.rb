@@ -102,27 +102,29 @@ Pass --fpm to build with FastCGI Process Manager support
 
     system "./configure", *configure_args
     
-    # mkfile = File.open("Makefile")
-    # newmk  = File.new("Makefile.fix", "w")
-    # mkfile.each do |line|
-    #     if /^EXTRA_LIBS =(.*)$/ =~ line
-    #         newmk.print "EXTRA_LIBS =", $1, " -lresolv\n"
-    #     elsif /^MH_BUNDLE_FLAGS =(.*)$/ =~ line
-    #         newmk.print "MH_BUNDLE_FLAGS =", $1, " -lresolv\n"
-    #     elsif /\$\(CC\) \$\(MH_BUNDLE_FLAGS\)/ =~ line
-    #         newmk.print "\t", '$(CC) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) $(PHP_GLOBAL_OBJS:.lo=.o) $(PHP_SAPI_OBJS:.lo=.o) $(PHP_FRAMEWORKS) $(EXTRA_LIBS) $(ZEND_EXTRA_LIBS) $(MH_BUNDLE_FLAGS) -o $@ && cp $@ libs/libphp$(PHP_MAJOR_VERSION).so', "\n"
-    #     elsif /^INSTALL_IT =(.*)$/ =~ line
-    #       if ARGV.include? '--with-apache'
-    #         newmk.print "INSTALL_IT = $(mkinstalldirs) '#{prefix}/libexec/apache2' && $(mkinstalldirs) '$(INSTALL_ROOT)/private/etc/apache2' && /usr/sbin/apxs -S LIBEXECDIR='#{prefix}/libexec/apache2' -S SYSCONFDIR='$(INSTALL_ROOT)/private/etc/apache2' -i -a -n php5 libs/libphp5.so", "\n"
-    #       else
-    #         newmk.print line
-    #       end
-    #     else
-    #         newmk.print line
-    #     end
-    # end
-    # newmk.close
-    # system "cp Makefile.fix Makefile"
+    if ARGV.include? '--with-apache'
+      mkfile = File.open("Makefile")
+      newmk  = File.new("Makefile.fix", "w")
+      mkfile.each do |line|
+          if /^EXTRA_LIBS =(.*)$/ =~ line
+              newmk.print "EXTRA_LIBS =", $1, " -lresolv\n"
+          elsif /^MH_BUNDLE_FLAGS =(.*)$/ =~ line
+              newmk.print "MH_BUNDLE_FLAGS =", $1, " -lresolv\n"
+          elsif /\$\(CC\) \$\(MH_BUNDLE_FLAGS\)/ =~ line
+              newmk.print "\t", '$(CC) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) $(PHP_GLOBAL_OBJS:.lo=.o) $(PHP_SAPI_OBJS:.lo=.o) $(PHP_FRAMEWORKS) $(EXTRA_LIBS) $(ZEND_EXTRA_LIBS) $(MH_BUNDLE_FLAGS) -o $@ && cp $@ libs/libphp$(PHP_MAJOR_VERSION).so', "\n"
+          elsif /^INSTALL_IT =(.*)$/ =~ line
+            if ARGV.include? '--with-apache'
+              newmk.print "INSTALL_IT = $(mkinstalldirs) '#{prefix}/libexec/apache2' && $(mkinstalldirs) '$(INSTALL_ROOT)/private/etc/apache2' && /usr/sbin/apxs -S LIBEXECDIR='#{prefix}/libexec/apache2' -S SYSCONFDIR='$(INSTALL_ROOT)/private/etc/apache2' -i -a -n php5 libs/libphp5.so", "\n"
+            else
+              newmk.print line
+            end
+          else
+              newmk.print line
+          end
+      end
+      newmk.close
+      system "cp Makefile.fix Makefile"
+    end
     
     if ARGV.include? '--with-apache'
       system "make install"
