@@ -14,6 +14,9 @@ class Php52 <Formula
   if ARGV.include? '--with-mysql'
       depends_on 'mysql'
   end
+  if ARGV.include? '--with-mariadb'
+      depends_on 'mariadb'
+  end
   if ARGV.include? '--fpm'
     exit if ARGV.include? '--with-apache'
     depends_on 'libevent'
@@ -23,6 +26,7 @@ class Php52 <Formula
     [
       ['--with-apache', "Install the Apache module"],
       ['--with-mysql',  "Build with MySQL (PDO) support"],
+      ['--with-mariadb',  "Build with MySQL (PDO) support via MariaDB"],
       ['--fpm', "Build with 'FastCGI Process Manager' patch"]
     ]
   end
@@ -36,6 +40,7 @@ class Php52 <Formula
     <<-END_CAVEATS
 Pass --with-apache to build with the Apache SAPI
 Pass --with-mysql  to build with MySQL (PDO) support
+Pass --with-mariadb  to build with MySQL (PDO) support via MariaDB
 Pass --fpm to build with FastCGI Process Manager support
     END_CAVEATS
   end
@@ -83,6 +88,11 @@ Pass --fpm to build with FastCGI Process Manager support
     end
     
     if ARGV.include? '--with-mysql'
+        configure_args.push("--with-mysql-sock=/tmp/mysql",
+        "--with-mysqli=#{HOMEBREW_PREFIX}/bin/mysql_config",
+        "--with-mysql=#{HOMEBREW_PREFIX}/lib/mysql",
+        "--with-pdo-mysql=#{HOMEBREW_PREFIX}/bin/mysql_config")
+    elsif ARGV.include? '--with-mariadb'
         configure_args.push("--with-mysql-sock=/tmp/mysql",
         "--with-mysqli=#{HOMEBREW_PREFIX}/bin/mysql_config",
         "--with-mysql=#{HOMEBREW_PREFIX}/lib/mysql",
